@@ -1,4 +1,5 @@
-// import React from 'react';
+
+// import Image from "../../../public/STC_logo.png"
 // import { 
 //   Home, 
 //   BarChart3, 
@@ -8,7 +9,6 @@
 //   FileText, 
 //   CreditCard,
 //   LogOut,
-//   Train,
 //   User
 // } from 'lucide-react';
 // import { useAuth } from '../../context/AuthContext';
@@ -40,7 +40,7 @@
 //       {/* Logo and Header */}
 //       <div className="p-6 border-b border-blue-800">
 //         <div className="flex items-center gap-3">
-//           <Train className="h-8 w-8 text-blue-300" />
+//           <img src={Image} className="h-13 w-18 text-blue-300" />
 //           <div>
 //             <h1 className="font-bold text-lg">STC</h1>
 //             <p className="text-blue-300 text-sm">Northern Railway</p>
@@ -95,7 +95,7 @@
 //   );
 // }
 
-import React from "react";
+
 import Image from "../../../public/STC_logo.png";
 import {
   Home,
@@ -124,14 +124,15 @@ export default function Sidebar() {
     { path: '/profile', label: 'My Profile', icon: User }
   ];
 
-  const trainerMenuItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: Home },
-    { path: '/add-trainee', label: 'Add Trainee', icon: UserPlus },
-    { path: '/marksheet', label: 'Marksheet', icon: FileText },
-    { path: '/id-card', label: 'ID Card Generation', icon: CreditCard },
-    { path: '/trainees', label: 'View Trainees', icon: Users },
-    { path: '/profile', label: 'My Profile', icon: User }
-  ];
+ const trainerMenuItems = [
+  { path: '/dashboard', label: 'Dashboard', icon: Home },
+  { path: '/add-trainee', label: 'Add Trainee', icon: UserPlus },
+  { path: '/marksheet', label: 'Marksheet', icon: FileText },
+  { path: '/id-card', label: 'ID Card Generation', icon: CreditCard },
+  { path: '/trainees', label: 'View Trainees', icon: Users },
+  { path: '/trainer/attendance', label: 'Attendance', icon: FileText }, // 👈 NEW LINE
+  { path: '/profile', label: 'My Profile', icon: User }
+];
 
   const menuItems = user?.role === 'director' ? directorMenuItems : trainerMenuItems;
 
@@ -140,11 +141,10 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-blue-800">
         <div className="flex items-center gap-3">
-          <img src={Image} className="h-28 w-34 text-blue-300" />
+          <img src={Image} className="h-13 w-18 text-blue-300" />
           <div>
             <h1 className="font-bold text-lg">STC</h1>
             <p className="text-blue-300 text-sm">Northern Railway</p>
-          
           </div>
         </div>
       </div>
@@ -194,3 +194,4 @@ export default function Sidebar() {
     </div>
   );
 }
+

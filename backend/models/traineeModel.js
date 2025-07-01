@@ -46,7 +46,7 @@ function addTrainee(data, callback) {
     data.degreeType,
     data.degreeName,
     data.graduationMarks,
-    data.trainerId || ''
+    Number(data.trainerId)
   ];
 
   db.run(query, values, function (err) {

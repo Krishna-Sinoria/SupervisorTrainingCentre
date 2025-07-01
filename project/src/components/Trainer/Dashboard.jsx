@@ -1,4 +1,4 @@
-// import React from 'react';
+// import { useState , useEffect } from 'react';
 // import { Users, FileText, CreditCard, TrendingUp } from 'lucide-react';
 // import { useAuth } from '../../context/AuthContext';
 // import { useData } from '../../context/DataContext';
@@ -7,38 +7,47 @@
 //   const { user } = useAuth();
 //   const { getTraineesByTrainer } = useData();
 
-//   const myTrainees = getTraineesByTrainer(user?.id || '');
+//   const [myTrainees, setMyTrainees] = useState([]);
+
+//   useEffect(() => {
+//     const loadTrainees = async () => {
+//       if (!user?.id) return;
+//       const result = await getTraineesByTrainer(user.id);
+//       setMyTrainees(result || []);
+//     };
+//     loadTrainees();
+//   }, [user]);
+
 //   const completedTrainees = myTrainees.filter(t => t.grade && t.grade !== '');
 //   const pendingMarksheets = myTrainees.filter(t => !t.marks);
-
 //   const stats = [
 //     {
 //       title: 'My Trainees',
 //       value: myTrainees.length,
 //       icon: Users,
 //       color: 'bg-blue-500',
-//       change: '+3 this month'
+//       change: `+${myTrainees.length} this month`
 //     },
 //     {
 //       title: 'Completed',
 //       value: completedTrainees.length,
 //       icon: TrendingUp,
 //       color: 'bg-green-500',
-//       change: 'Good progress'
+      
 //     },
 //     {
 //       title: 'Pending Marksheets',
 //       value: pendingMarksheets.length,
 //       icon: FileText,
 //       color: 'bg-orange-500',
-//       change: 'Needs attention'
+      
 //     },
 //     {
 //       title: 'ID Cards Issued',
 //       value: myTrainees.length,
 //       icon: CreditCard,
 //       color: 'bg-purple-500',
-//       change: 'All issued'
+      
 //     }
 //   ];
 
@@ -153,7 +162,6 @@
 //   );
 // }
 
-import React from 'react';
 import { useState, useEffect } from 'react';
 import {
   Users,
@@ -163,13 +171,13 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
-import { useNavigate } from 'react-router-dom'; // ✅ Added
+import { useNavigate } from 'react-router-dom'; // Added
 
 export default function TrainerDashboard() {
   const { user } = useAuth();
   const { getTraineesByTrainer } = useData();
   const [myTrainees, setMyTrainees] = useState([]);
-  const navigate = useNavigate(); // ✅ Initialize
+  const navigate = useNavigate(); // Initialize
 
   useEffect(() => {
     const loadTrainees = async () => {

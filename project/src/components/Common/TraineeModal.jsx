@@ -38,8 +38,8 @@ COURSE INFORMATION
 Trainee ID: ${trainee.id}
 Ticket Number: ${trainee.ticketNumber}
 Batch: ${trainee.batch}
-Designation: ${trainee.designation}
-Module Number: ${trainee.moduleNumber}
+Designation: ${trainee.courseCategory}
+Module Number: ${trainee.courseName}
 Course Duration: ${trainee.courseDuration}
 Stream: ${trainee.stream}
 
@@ -54,7 +54,12 @@ Email: ${trainee.email}
 Address: ${trainee.address}
 
 EDUCATION
-Qualification: ${trainee.educationalQualification}
+Class 10 Percentage: ${trainee.class10Marks}%
+Class 12 Percentage: ${trainee.class12Marks}%
+Degree Type: ${trainee.degreeType}
+Degree Name: ${trainee.degreeName}
+Graduation/PG Marks: ${trainee.graduationMarks}%
+
 
 ${trainee.marks ? `
 ACADEMIC PERFORMANCE
@@ -226,21 +231,38 @@ Supervisors Training Centre - Northern Railway
                 <p className="text-gray-900">{trainee.batch}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-700">Module Number</p>
-                <p className="text-gray-900">{trainee.moduleNumber}</p>
+                <p className="text-sm font-medium text-gray-700">Course Category</p>
+                <p className="text-gray-900">{trainee.courseCategory}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-700">Course Duration</p>
                 <p className="text-gray-900">{trainee.courseDuration}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-700">Stream</p>
-                <p className="text-gray-900">{trainee.stream}</p>
+                <p className="text-sm font-medium text-gray-700">Course Name</p>
+                <p className="text-gray-900">{trainee.courseName}</p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-700">Educational Qualification</p>
-                <p className="text-gray-900">{trainee.educationalQualification}</p>
-              </div>
+             <div>
+  <p className="text-sm font-medium text-gray-700">Class 10 Percentage</p>
+  <p className="text-gray-900">{trainee.class10Marks}%</p>
+</div>
+<div>
+  <p className="text-sm font-medium text-gray-700">Class 12 Percentage</p>
+  <p className="text-gray-900">{trainee.class12Marks}%</p>
+</div>
+<div>
+  <p className="text-sm font-medium text-gray-700">Degree Type</p>
+  <p className="text-gray-900">{trainee.degreeType}</p>
+</div>
+<div>
+  <p className="text-sm font-medium text-gray-700">Degree Name</p>
+  <p className="text-gray-900">{trainee.degreeName}</p>
+</div>
+<div>
+  <p className="text-sm font-medium text-gray-700">Graduation/PG Marks</p>
+  <p className="text-gray-900">{trainee.graduationMarks}%</p>
+</div>
+
             </div>
           </div>
 

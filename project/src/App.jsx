@@ -1,7 +1,12 @@
+/*DONT DELETE THESE CHANGES*/
 // import React, { useState } from 'react';
-// import { AuthProvider, useAuth } from './context/AuthContext';
-// import { DataProvider } from './context/DataContext';
-// import Login from './components/Login';
+
+// import { AuthProvider, useAuth } from './context/AuthContext'; // ✅ Will use backend later inside AuthContext
+// import { DataProvider } from './context/DataContext'; // ✅ If using real-time data, you may later fetch from backend
+
+// import Login from './components/Login'; // ✅ This uses AuthContext.login() — replace logic in AuthContext only
+
+// // Layout
 // import Sidebar from './components/Layout/Sidebar';
 // import Header from './components/Layout/Header';
 
@@ -14,14 +19,15 @@
 // // Trainer Components
 // import TrainerDashboard from './components/Trainer/Dashboard';
 // import AddTraineeForm from './components/Trainer/AddTraineeForm';
+// import ViewTrainees from './components/Trainer/ViewTrainees';
 // import Marksheet from './components/Trainer/Marksheet';
 // import IDCard from './components/Trainer/IDCard';
 
-// // Common Components
+// // Common
 // import Profile from './components/Common/Profile';
 
 // function AppContent() {
-//   const { user, isLoading } = useAuth();
+//   const { user, isLoading } = useAuth(); // ✅ `user` comes from AuthContext, which you will wire to backend later
 //   const [activeSection, setActiveSection] = useState('dashboard');
 
 //   if (isLoading) {
@@ -36,7 +42,7 @@
 //   }
 
 //   if (!user) {
-//     return <Login />;
+//     return <Login />; // ✅ Login logic is in AuthContext; just swap mock login with real login API there
 //   }
 
 //   const getSectionTitle = () => {
@@ -44,6 +50,7 @@
 //       dashboard: 'Dashboard',
 //       analytics: 'Analytics',
 //       trainers: 'View Trainers',
+//       trainees:'View Trainees',
 //       roles: 'Role Manager',
 //       'add-trainee': 'Add Trainee',
 //       marksheet: 'Marksheet Management',
@@ -58,13 +65,10 @@
 //   };
 
 //   const renderContent = () => {
-//     if (activeSection === 'add-trainee') {
-//       return <AddTraineeForm />;
-//     }
-//     if (activeSection === 'profile') {
-//       return <Profile />;
-//     }
+//     if (activeSection === 'add-trainee') return <AddTraineeForm />;
+//     if (activeSection === 'profile') return <Profile />;
 
+//     // ✅ Role-based rendering — works now, no change needed
 //     if (user.role === 'director') {
 //       switch (activeSection) {
 //         case 'analytics':
@@ -73,7 +77,6 @@
 //           return <ViewTrainers />;
 //         case 'roles':
 //           return <RoleManager />;
-    
 //         default:
 //           return <DirectorDashboard onNavigate={handleNavigation} />;
 //       }
@@ -81,6 +84,8 @@
 //       switch (activeSection) {
 //         case 'marksheet':
 //           return <Marksheet />;
+//           case 'trainees':
+//           return <ViewTrainees loggedInTrainerId={user?.id}/>;
 //         case 'id-card':
 //           return <IDCard />;
 //         default:
@@ -104,16 +109,19 @@
 
 // function App() {
 //   return (
+//     // ✅ AuthProvider → later will be connected to backend for login/logout/updateUser
 //     <AuthProvider>
-//       <DataProvider>
-//         <AppContent />
-//       </DataProvider>
+//       {/* ✅ DataProvider → optionally switch to use data from backend if needed */}
+//    <DataProvider>
+//      <AppContent />
+//    </DataProvider>
+       
+   
 //     </AuthProvider>
 //   );
 // }
 
 // export default App;
-
 
 
 import React from 'react';
@@ -141,13 +149,16 @@ import ViewTrainees from './components/Trainer/ViewTrainees';
 import Marksheet from './components/Trainer/Marksheet';
 import IDCard from './components/Trainer/IDCard';
 
+import Attendance from './components/Trainer/Attendance';
+
+
 import Profile from './components/Common/Profile';
 
 // Layout
 import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
 
-// 🛡️ Role-based private route wrapper
+// 🛡 Role-based private route wrapper
 function PrivateRoute({ allowedRoles, children }) {
   const { user, isLoading } = useAuth();
 
@@ -184,6 +195,7 @@ function LayoutWrapper() {
       '/marksheet': 'Marksheet Management',
       '/id-card': 'ID Card Generation',
       '/trainees': 'View Trainees',
+    
       '/profile': 'My Profile'
     };
     return map[path] || 'Dashboard';
@@ -213,13 +225,10 @@ function AppRoutes() {
 
       {/* Protected Layout */}
       <Route path="/" element={<PrivateRoute><LayoutWrapper /></PrivateRoute>}>
-
-        {/* Dashboard with dynamic routing based on role */}
+        {/* Dashboard */}
         <Route
           path="dashboard"
-          element={
-            user?.role === 'director' ? <DirectorDashboard /> : <TrainerDashboard />
-          }
+          element={user?.role === 'director' ? <DirectorDashboard /> : <TrainerDashboard />}
         />
 
         {/* Director-only Routes */}
@@ -234,9 +243,6 @@ function AppRoutes() {
         } />
 
         {/* Trainer-only Routes */}
-        <Route path="add-trainee" element={
-          <PrivateRoute allowedRoles={['trainer']}><AddTraineeForm /></PrivateRoute>
-        } />
         <Route path="trainees" element={
           <PrivateRoute allowedRoles={['trainer']}><ViewTrainees loggedInTrainerId={user?.id} /></PrivateRoute>
         } />
@@ -246,13 +252,20 @@ function AppRoutes() {
         <Route path="id-card" element={
           <PrivateRoute allowedRoles={['trainer']}><IDCard /></PrivateRoute>
         } />
+        <Route path="/Trainer/Attendance" element={<Attendance />} />
+       
 
         {/* Common Route */}
         <Route path="profile" element={<Profile />} />
         <Route index element={<Navigate to="/dashboard" />} />
+         <Route path="add-trainee" element={
+        <PrivateRoute allowedRoles={['trainer', 'director']}><AddTraineeForm /></PrivateRoute>
+          } />
+
       </Route>
 
-      {/* Redirect any unknown route */}
+
+      {/* Fallback */}
       <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>
   );
@@ -271,4 +284,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;

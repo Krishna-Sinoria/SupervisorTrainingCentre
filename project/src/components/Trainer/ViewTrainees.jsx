@@ -63,7 +63,12 @@ export default function ViewTrainees({ loggedInTrainerId }) {
   const [selectedTrainee, setSelectedTrainee] = useState(null);
   const [hoveredTrainee, setHoveredTrainee] = useState(null);
 
-  const trainer = trainers.find(t => t.id === loggedInTrainerId);
+  // ✅ Check for valid trainer ID
+  if (!loggedInTrainerId) {
+    return <div className="text-center p-10 text-red-500">Error: No trainer ID found. Please re-login.</div>;
+  }
+
+  const trainer = trainers.find(t => String(t.id) === String(loggedInTrainerId));
   const trainerTrainees = getTraineesByTrainer(loggedInTrainerId);
   const selectedTraineeData = selectedTrainee ? trainees.find(t => t.id === selectedTrainee) : null;
 
@@ -79,7 +84,14 @@ export default function ViewTrainees({ loggedInTrainerId }) {
   };
 
   const exportTraineeProfile = (trainee) => {
-    const profileContent = `...`; // Keep your existing export logic here
+    const profileContent = `
+      Name: ${trainee.fullName}
+      ID: ${trainee.id}
+      Email: ${trainee.email}
+      Designation: ${trainee.designation}
+      Module: ${trainee.moduleNumber}
+      Grade: ${trainee.grade || 'Not graded'}
+    `;
     const blob = new Blob([profileContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -91,7 +103,7 @@ export default function ViewTrainees({ loggedInTrainerId }) {
     URL.revokeObjectURL(url);
   };
 
-  if (!trainer) return <div>Loading your profile...</div>;
+  if (!trainer) return <div className="p-6 text-center text-gray-600">Loading your profile...</div>;
 
   return (
     <div className="space-y-6">

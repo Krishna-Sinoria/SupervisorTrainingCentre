@@ -1,4 +1,4 @@
-// ✅ Updated RoleManager with working Add/Edit/View Trainee modals
+
 import React, { useState } from 'react';
 import { Search, Edit, Trash2, Plus, Eye, CheckCircle, X, User, Shield } from 'lucide-react';
 import { useData } from '../../context/DataContext';
@@ -78,13 +78,27 @@ export default function RoleManager() {
     }
   };
 
-  const getBadge = (val, type) => {
-    const base = 'px-2 py-1 rounded-full text-sm font-medium';
-    if (type === 'role') return val === 'director' ? `${base} bg-purple-100 text-purple-800` : `${base} bg-blue-100 text-blue-800`;
-    return val ? `${base} bg-green-100 text-green-800` : `${base} bg-red-100 text-red-800`;
-  };
+  // const getBadge = (val, type) => {
+  //   const base = 'px-2 py-1 rounded-full text-sm font-medium';
+  //   if (type === 'role') return val === 'director' ? ${base} bg-purple-100 text-purple-800 : ${base} bg-blue-100 text-blue-800;
+  //   return val ? ${base} bg-green-100 text-green-800 : ${base} bg-red-100 text-red-800;
+  // };
+
+    const getBadge = (val, type) => {
+  const base = 'px-2 py-1 rounded-full text-sm font-medium';
+  if (type === 'role') {
+    return val === 'director'
+      ? `${base} bg-purple-100 text-purple-800`
+      : `${base} bg-blue-100 text-blue-800;`
+  }
+  return val
+    ? `${base} bg-green-100 text-green-800`
+    : `${base} bg-red-100 text-red-800;`
+};
+
 
   const RoleIcon = role => role === 'director' ? Shield : User;
+
 
   return (
     <div className="space-y-6">
