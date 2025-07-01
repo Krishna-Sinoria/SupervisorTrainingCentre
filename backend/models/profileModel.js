@@ -4,15 +4,15 @@ const db = require('../db/database');
 // Create or Update Profile
 const saveProfile = (profile, callback) => {
   const {
-    id, name, email, phone, address,
+    userId, name, email, phone, address,
     department, position, photo, role,
     joinDate, active
   } = profile;
 
   const query = `
-    INSERT INTO profile (id, name, email, phone, address, department, position, photo, role, joinDate, active)
+    INSERT INTO profile (userId, name, email, phone, address, department, position, photo, role, joinDate, active)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ON CONFLICT(id) DO UPDATE SET
+    ON CONFLICT(userId) DO UPDATE SET
       name = excluded.name,
       email = excluded.email,
       phone = excluded.phone,
@@ -24,7 +24,12 @@ const saveProfile = (profile, callback) => {
       joinDate = excluded.joinDate,
       active = excluded.active
   `;
-  db.run(query, [id, name, email, phone, address, department, position, photo, role, joinDate, active], callback);
+  db.run(query, [userId, name, email, phone, address, department, position, photo, role, joinDate, active], (err) => {
+    if (err) {
+      console.error('❌ DB error in saveProfile():', err.message); // <-- add this line
+    }
+    callback(err);
+  });
 };
 
 // Get Profile by ID

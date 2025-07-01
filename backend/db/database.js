@@ -42,7 +42,7 @@ db.serialize(() => {
 db.run(`
   CREATE TABLE IF NOT EXISTS profile (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userId INTEGER NOT NULL,
+    userId INTEGER UNIQUE NOT NULL,
     name TEXT,
     email TEXT,
     phone TEXT,

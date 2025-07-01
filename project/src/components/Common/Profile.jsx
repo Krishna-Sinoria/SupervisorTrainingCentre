@@ -42,6 +42,7 @@ const handleSave = async () => {
   try {
     const profileData = {
       id: user.id,
+      userId: user.id,
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
@@ -50,21 +51,27 @@ const handleSave = async () => {
       position: formData.position,
       photo: formData.photo,
       role: user.role,
-      joinDate: user.joinDate || new Date().toISOString(), // fallback if not available
-      active: user.active ?? true // default to true if undefined
+      joinDate: user.joinDate,
+      active: user.active
     };
 
     const res = await fetch('http://localhost:5000/api/profile', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(profileData)
     });
 
     const data = await res.json();
 
     if (data.success) {
+      // ✅ fetch updated profile from backend
+      const updatedRes = await fetch(`http://localhost:5000/api/profile/${user.id}`);
+      const updatedProfile = await updatedRes.json();
+
+      // ✅ Update context + local state
+      updateUser(updatedProfile); // if your context allows
+      setFormData(updatedProfile); // so inputs reflect new data
+
       setIsEditing(false);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);

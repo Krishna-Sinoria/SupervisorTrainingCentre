@@ -1,5 +1,6 @@
 // controllers/profileController.js
 const Profile = require('../models/profileModel');
+const db = require('../db/database.js');
 
 // POST /api/profile
 const saveProfile = (req, res) => {

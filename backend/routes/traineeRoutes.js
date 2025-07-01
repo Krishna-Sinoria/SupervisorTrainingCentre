@@ -61,7 +61,7 @@ router.post('/', (req, res) => {
       }
 
       traineeData.trainerId = row?.id || '';
-      console.log("🧾 [LOOKUP] Final traineeData before insert:", traineeData); // ✅ log here
+      // console.log("🧾 [LOOKUP] Final traineeData before insert:", traineeData); // ✅ log here
 
       addTrainee(traineeData, (err, id) => {
         if (err) {
@@ -73,7 +73,7 @@ router.post('/', (req, res) => {
     });
   } else {
     // ✅ Trainer already set manually (like for director)
-    console.log("🧾 [NO LOOKUP] Final traineeData before insert:", traineeData); // ✅ log here too
+    // console.log("🧾 [NO LOOKUP] Final traineeData before insert:", traineeData); // ✅ log here too
 
     addTrainee(traineeData, (err, id) => {
       if (err) {
