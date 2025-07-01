@@ -1,7 +1,6 @@
-// routes/traineeRoutes.js
-
 const express = require('express');
 const router = express.Router();
+const db = require('../db/database'); // ✅ REQUIRED to query trainerId
 const { addTrainee, getAllTrainees } = require('../models/traineeModel');
 
 // ==============================
@@ -31,28 +30,15 @@ router.get('/', (req, res) => {
 // → Add a new trainee
 // ==============================
 router.post('/', (req, res) => {
-  console.log('📥 Incoming trainee data:', req.body);
   const traineeData = req.body;
 
-  // ✅ Correct required fields list
   const requiredFields = [
-    // Personal Info
     'serialNo', 'fullName', 'fatherName', 'motherName', 'dateOfBirth',
-
-    // Appointment Info
     'dateOfAppointment', 'dateOfSparing', 'category', 'bloodGroup', 'maritalStatus',
     'employeeName', 'pfNumber', 'modeOfAppointment',
-
-    // Course Info
     'batch', 'selectCategory', 'selectCourse',
-
-    // Working Info
     'unit', 'workingUnder', 'stationCode',
-
-    // Contact Info
     'phoneNumber', 'email', 'address',
-
-    // Qualification Info
     'class10Marks', 'class12Marks', 'degreeType', 'degreeName', 'graduationMarks'
   ];
 
@@ -63,15 +49,42 @@ router.post('/', (req, res) => {
     });
   }
 
-  // ✅ Insert into DB
-  addTrainee(traineeData, (err, id) => {
-    if (err) {
-      console.error('❌ Error saving trainee:', err.message);
-      return res.status(500).json({ error: 'Failed to save trainee.' });
-    }
+  // Step 2: Map trainer name to trainerId (unless already provided)
+  if (!traineeData.trainerId && traineeData.workingUnder !== 'Other') {
+    const trainerName = traineeData.workingUnder;
+    const query = `SELECT id FROM users WHERE name = ? AND role = 'trainer' LIMIT 1`;
 
-    res.status(201).json({ message: '✅ Trainee added successfully', id });
-  });
+    db.get(query, [trainerName], (err, row) => {
+      if (err) {
+        console.error('❌ DB Error fetching trainerId:', err.message);
+        return res.status(500).json({ error: 'Trainer lookup failed' });
+      }
+
+      traineeData.trainerId = row?.id || '';
+      // console.log("🧾 [LOOKUP] Final traineeData before insert:", traineeData); // ✅ log here
+
+      addTrainee(traineeData, (err, id) => {
+        if (err) {
+          console.error('❌ Error saving trainee:', err.message);
+          return res.status(500).json({ error: 'Failed to save trainee.' });
+        }
+        res.status(201).json({ message: '✅ Trainee added successfully', id });
+      });
+    });
+  } else {
+    // ✅ Trainer already set manually (like for director)
+    // console.log("🧾 [NO LOOKUP] Final traineeData before insert:", traineeData); // ✅ log here too
+
+    addTrainee(traineeData, (err, id) => {
+      if (err) {
+        console.error('❌ Error saving trainee:', err.message);
+        return res.status(500).json({ error: 'Failed to save trainee.' });
+      }
+      res.status(201).json({ message: '✅ Trainee added successfully', id });
+    });
+  }
 });
+
+
 
 module.exports = router;

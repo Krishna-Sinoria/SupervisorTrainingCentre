@@ -38,12 +38,52 @@ export default function Profile() {
     }
   };
 
-  const handleSave = () => {
-    updateUser(formData);
-    setIsEditing(false);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-  };
+const handleSave = async () => {
+  try {
+    const profileData = {
+      id: user.id,
+      userId: user.id,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      address: formData.address,
+      department: formData.department,
+      position: formData.position,
+      photo: formData.photo,
+      role: user.role,
+      joinDate: user.joinDate,
+      active: user.active
+    };
+
+    const res = await fetch('http://localhost:5000/api/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profileData)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      // ✅ fetch updated profile from backend
+      const updatedRes = await fetch(`http://localhost:5000/api/profile/${user.id}`);
+      const updatedProfile = await updatedRes.json();
+
+      // ✅ Update context + local state
+      updateUser(updatedProfile); // if your context allows
+      setFormData(updatedProfile); // so inputs reflect new data
+
+      setIsEditing(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } else {
+      alert('Failed to update profile');
+    }
+  } catch (err) {
+    console.error('Error saving profile:', err);
+    alert('Error saving profile');
+  }
+};
+
 
   const handleCancel = () => {
     setFormData({
@@ -287,31 +327,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Account Security */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Account Security</h3>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div>
-              <h4 className="font-medium text-gray-900">Password</h4>
-              <p className="text-sm text-gray-600">Last changed 30 days ago</p>
-            </div>
-            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-              Change Password
-            </button>
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div>
-              <h4 className="font-medium text-gray-900">Two-Factor Authentication</h4>
-              <p className="text-sm text-gray-600">Add an extra layer of security</p>
-            </div>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              Enable 2FA
-            </button>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 }

@@ -1,38 +1,37 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const DataContext = createContext(undefined);
+
+export const useData = () => {
+  const context = useContext(DataContext);
+  if (!context) {
+    throw new Error('useData must be used within a DataProvider');
+  }
+  return context;
+};
 
 export function DataProvider({ children }) {
   const [trainees, setTrainees] = useState([]);
   const [trainers, setTrainers] = useState([]);
+  const [attendanceMap, setAttendanceMap] = useState({});
+  
 
   useEffect(() => {
-    const savedTrainees = localStorage.getItem('stc_trainees');
-    if (savedTrainees) {
-      try {
-        const parsedTrainees = JSON.parse(savedTrainees);
-        setTrainees(Array.isArray(parsedTrainees) ? parsedTrainees : []);
-      } catch (error) {
-        console.error('Error parsing saved trainees:', error);
-        setTrainees([]);
-      }
-    } else {
-      const demoTrainees = [/*...*/]; // ✅ For brevity, paste your trainee objects here as-is
-      setTrainees(demoTrainees);
-      localStorage.setItem('stc_trainees', JSON.stringify(demoTrainees));
-    }
+    fetchTrainees();
+     fetchAllAttendance();
 
     const savedTrainers = localStorage.getItem('stc_trainers');
     if (savedTrainers) {
       try {
-        const parsedTrainers = JSON.parse(savedTrainers);
-        setTrainers(Array.isArray(parsedTrainers) ? parsedTrainers : []);
-      } catch (error) {
-        console.error('Error parsing saved trainers:', error);
+        const parsed = JSON.parse(savedTrainers);
+        setTrainers(Array.isArray(parsed) ? parsed : []);
+      } catch (err) {
+        console.error('Trainer data parsing error:', err);
         setTrainers([]);
       }
     } else {
-      const demoTrainers = [
+      const demo = [
         {
           id: '2',
           email: 'trainer1@stc.railway.gov.in',
@@ -58,19 +57,110 @@ export function DataProvider({ children }) {
           active: true
         }
       ];
-      setTrainers(demoTrainers);
-      localStorage.setItem('stc_trainers', JSON.stringify(demoTrainers));
+      setTrainers(demo);
+      localStorage.setItem('stc_trainers', JSON.stringify(demo));
     }
   }, []);
 
-  const saveTrainees = (newTrainees) => {
-    setTrainees(newTrainees);
-    localStorage.setItem('stc_trainees', JSON.stringify(newTrainees));
+  const fetchTrainees = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/trainees');
+      setTrainees(res.data || []);
+    } catch (err) {
+      console.error('Error fetching trainees:', err?.response?.data || err.message);
+    }
   };
 
-  const saveTrainers = (newTrainers) => {
-    setTrainers(newTrainers);
-    localStorage.setItem('stc_trainers', JSON.stringify(newTrainers));
+  const addTrainee = async (traineeData) => {
+    try {
+      console.log('📤 Sending trainee to backend:', traineeData);
+      const res = await axios.post('http://localhost:5000/api/trainees', traineeData);
+      const newTrainee = {
+        ...traineeData,
+        id: res.data.id,
+        createdAt: new Date().toISOString()
+      };
+      await fetchTrainees();  // ✅ ensures state is updated from backend
+    } catch (err) {
+      console.error('Error adding trainee:', err?.response?.data || err.message);
+      throw err;
+    }
+  };
+
+  const updateTrainee = async (id, updates) => {
+    try {
+      await axios.put(`http://localhost:5000/api/trainees/${id}`, updates);
+      setTrainees(prev =>
+        prev.map(t => (t.id === id ? { ...t, ...updates } : t))
+      );
+    } catch (err) {
+      console.error('Error updating trainee:', err?.response?.data || err.message);
+    }
+  };
+
+  const deleteTrainee = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/trainees/${id}`);
+      setTrainees(prev => prev.filter(t => t.id !== id));
+    } catch (err) {
+      console.error('Error deleting trainee:', err?.response?.data || err.message);
+    }
+  };
+
+  /*attendance*/
+   const fetchAllAttendance = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/attendance');
+      const map = {};
+      res.data.forEach(record => {
+        if (!map[record.trainee_id]) map[record.trainee_id] = [];
+        map[record.trainee_id].push({ date: record.date, status: record.status });
+      });
+      setAttendanceMap(map);
+    } catch (err) {
+      console.error('Error fetching attendance records:', err?.response?.data || err.message);
+    }
+  };
+
+  const markAttendance = async (trainee_id, date, status) => {
+    try {
+      await axios.post('http://localhost:5000/api/attendance', { trainee_id, date, status });
+      setAttendanceMap(prev => {
+        const updated = { ...prev };
+        if (!updated[trainee_id]) updated[trainee_id] = [];
+        const existingIndex = updated[trainee_id].findIndex(r => r.date === date);
+
+        if (existingIndex >= 0) {
+          updated[trainee_id][existingIndex].status = status;
+        } else {
+          updated[trainee_id].push({ date, status });
+        }
+        return updated;
+      });
+    } catch (err) {
+      console.error('Error marking attendance:', err?.response?.data || err.message);
+    }
+  };
+
+  const getAttendanceStatus = (trainee_id, date) => {
+    const records = attendanceMap[trainee_id] || [];
+    const record = records.find(r => r.date === date);
+    return record ? record.status : 'Not Marked';
+  };
+
+  const getAttendanceRecords = (trainee_id) => {
+    return attendanceMap[trainee_id] || [];
+  };
+
+  
+  /*backend*/
+ const getTraineesByTrainer = (trainerId) => {
+  return trainees.filter(t => t.trainerId?.toString() === trainerId.toString());
+};
+
+
+  const getTrainerById = (id) => {
+    return trainers.find(trainer => trainer.id.toString() === id.toString());
   };
 
   const generateTraineeId = () => {
@@ -83,77 +173,6 @@ export function DataProvider({ children }) {
     const year = new Date().getFullYear();
     const count = trainees.length + 1;
     return `TKT-${year}-${count.toString().padStart(3, '0')}`;
-  };
-
-  const generateTrainerId = () => {
-    const count = trainers.length + 4;
-    return count.toString();
-  };
-
-  const addTrainee = async (traineeData) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newTrainee = {
-          ...traineeData,
-          id: generateTraineeId(),
-          ticketNumber: generateTicketNumber(),
-          createdAt: new Date().toISOString()
-        };
-        const updatedTrainees = [...trainees, newTrainee];
-        saveTrainees(updatedTrainees);
-        resolve();
-      }, 500);
-    });
-  };
-
-  const updateTrainee = (id, updates) => {
-    const updatedTrainees = trainees.map(trainee =>
-      trainee.id === id ? { ...trainee, ...updates } : trainee
-    );
-    saveTrainees(updatedTrainees);
-  };
-
-  const deleteTrainee = (id) => {
-    const updatedTrainees = trainees.filter(trainee => trainee.id !== id);
-    saveTrainees(updatedTrainees);
-  };
-
-  const addTrainer = async (trainerData) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newTrainer = {
-          ...trainerData,
-          id: generateTrainerId(),
-          role: 'trainer'
-        };
-        const updatedTrainers = [...trainers, newTrainer];
-        saveTrainers(updatedTrainers);
-        resolve();
-      }, 500);
-    });
-  };
-
-  const updateTrainer = (id, updates) => {
-    const updatedTrainers = trainers.map(trainer =>
-      trainer.id === id ? { ...trainer, ...updates } : trainer
-    );
-    saveTrainers(updatedTrainers);
-  };
-
-  const deleteTrainer = (id) => {
-    const updatedTrainees = trainees.filter(trainee => trainee.trainerId !== id);
-    saveTrainees(updatedTrainees);
-
-    const updatedTrainers = trainers.filter(trainer => trainer.id !== id);
-    saveTrainers(updatedTrainers);
-  };
-
-  const getTraineesByTrainer = (trainerId) => {
-    return trainees.filter(trainee => trainee.trainerId === trainerId);
-  };
-
-  const getTrainerById = (id) => {
-    return trainers.find(trainer => trainer.id === id);
   };
 
   const getAnalytics = () => {
@@ -173,8 +192,8 @@ export function DataProvider({ children }) {
     ].filter(item => item.count > 0);
 
     const monthlyData = {};
-    trainees.forEach(trainee => {
-      const date = new Date(trainee.createdAt);
+    trainees.forEach(t => {
+      const date = new Date(t.createdAt);
       const monthKey = date.toLocaleDateString('en-US', { month: 'short' });
       monthlyData[monthKey] = (monthlyData[monthKey] || 0) + 1;
     });
@@ -205,10 +224,10 @@ export function DataProvider({ children }) {
         getAnalytics,
         generateTicketNumber,
         generateTraineeId,
-        addTrainer,
-        updateTrainer,
-        deleteTrainer,
-        getTrainerById
+        getTrainerById,
+          markAttendance,
+        getAttendanceStatus,
+        getAttendanceRecords,
       }}
     >
       {children}
@@ -216,10 +235,4 @@ export function DataProvider({ children }) {
   );
 }
 
-export const useData = () => {
-  const context = useContext(DataContext);
-  if (context === undefined) {
-    throw new Error('useData must be used within a DataProvider');
-  }
-  return context;
-};
+export { DataContext };

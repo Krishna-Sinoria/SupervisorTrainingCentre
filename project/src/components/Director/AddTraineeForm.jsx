@@ -34,7 +34,7 @@ export default function AddTraineeForm() {
     courseDuration: '',
     stream: '',
     unit: '',
-     workingUnder: '', // this will store trainer ID now
+    workingUnder: '',
     customWorkingUnder: '',//add this line
     stationCode: '',
     courseTitle:'',
@@ -123,7 +123,7 @@ export default function AddTraineeForm() {
     try {
       await addTrainee({
         ...formData,
-       trainerId: formData.workingUnder || user?.id || ''
+        trainerId: user?.id || ''
       });
 
       // Reset form
@@ -148,7 +148,7 @@ export default function AddTraineeForm() {
         selectCourse: '',  
         courseDuration: '',
         unit: '',
-         workingUnder: '', // this will store trainer ID now
+        workingUnder: '',
         stationCode: '',
         phoneNumber: '',
         email: '',
@@ -553,11 +553,11 @@ export default function AddTraineeForm() {
                 required
               >
                 <option value="">Select Trainer</option>
-                {trainers.map(trainer => (
-    <option key={trainer.id} value={trainer.id}>
-      {trainer.name}
-    </option>
-  ))}
+                {activeTrainers.map((trainer) => (
+                  <option key={trainer.id} value={trainer.name}>
+                    {trainer.name} - {trainer.position} ({trainer.department})
+                  </option>
+                ))}
                 <option value="Other">Other (Manual Entry)</option>
               </select>
             </div>

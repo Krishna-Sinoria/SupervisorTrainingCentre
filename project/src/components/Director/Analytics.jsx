@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, LineChart, Line, ResponsiveContainer
@@ -17,6 +17,7 @@ export default function Analytics() {
 
   return (
     <div className="space-y-6">
+      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Trainees</h3>
@@ -40,6 +41,7 @@ export default function Analytics() {
         </div>
       </div>
 
+      {/* Pie & Bar Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Trainees by Course Duration</h3>
@@ -77,6 +79,7 @@ export default function Analytics() {
         </div>
       </div>
 
+      {/* Line Chart */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Join Trend</h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -90,6 +93,7 @@ export default function Analytics() {
         </ResponsiveContainer>
       </div>
 
+      {/* Trainer Performance Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Trainer Performance</h3>
         <div className="overflow-x-auto">
@@ -140,6 +144,7 @@ export default function Analytics() {
         </div>
       </div>
 
+      {/* Key Insights */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Insights</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

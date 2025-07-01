@@ -1,4 +1,4 @@
-// import React from 'react';
+
 // import { Bell, User } from 'lucide-react';
 // import { useAuth } from '../../context/AuthContext';
 
@@ -35,7 +35,6 @@
 //   );
 // }
 
-import React from 'react';
 
 import { Bell, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -75,3 +74,4 @@ export default function Header({ title }) {
     </header>
   );
 }
+

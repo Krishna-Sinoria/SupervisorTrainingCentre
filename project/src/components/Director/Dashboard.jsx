@@ -1,22 +1,27 @@
 // import React from 'react';
 // import { Users, UserCheck, GraduationCap, TrendingUp, UserPlus } from 'lucide-react';
-// import { useData } from '../../context/DataContext';
+// import { useData } from '../../context/DataContext'; // 🔁 Will now fetch from backend
 
 // export default function DirectorDashboard({ onNavigate }) {
+//   // ⬇️ These are expected to come from backend now (via DataContext)
 //   const { getAnalytics, trainees, trainers } = useData();
-//   const analytics = getAnalytics();
+//   const analytics = getAnalytics(); // Should be based on real-time data
 
+//   // Example logic that depends on fetched data
 //   const activeTrainersCount = trainers.filter(t => t.active).length;
 //   const completedTrainees = trainees.filter(t => t.grade && t.grade !== '').length;
-//   const completionRate = trainees.length > 0 ? Math.round((completedTrainees / trainees.length) * 100) : 0;
+//   const completionRate = trainees.length > 0
+//     ? Math.round((completedTrainees / trainees.length) * 100)
+//     : 0;
 
+//   // These static values can later be dynamic (e.g., fetched from backend too)
 //   const stats = [
 //     {
 //       title: 'Total Trainees',
 //       value: analytics.totalTrainees,
 //       icon: Users,
 //       color: 'bg-blue-500',
-//       change: '+12%'
+//       change: '+12%' // Optional: make dynamic later
 //     },
 //     {
 //       title: 'Active Trainers',
@@ -27,7 +32,7 @@
 //     },
 //     {
 //       title: 'Courses Running',
-//       value: '8',
+//       value: '8', // 🔁 Optional: fetch from backend later
 //       icon: GraduationCap,
 //       color: 'bg-purple-500',
 //       change: '+2%'
@@ -41,10 +46,11 @@
 //     }
 //   ];
 
+//   // This function is based on timestamps (make sure createdAt exists in backend)
 //   const getTimeAgo = (dateString) => {
 //     const now = new Date();
 //     const date = new Date(dateString);
-//     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+//     const diffInMinutes = Math.floor((now - date) / (1000 * 60));
 
 //     if (diffInMinutes < 1) return 'Just now';
 //     if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
@@ -58,10 +64,15 @@
 //     return date.toLocaleDateString();
 //   };
 
+//   // 🔁 This now assumes backend returns trainee.createdAt, trainer.joinDate, etc.
 //   const generateRecentActivities = () => {
 //     const activities = [];
 
-//     const recentTrainees = trainees.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 2);
+//     // Recent trainees
+//     const recentTrainees = trainees.sort((a, b) =>
+//       new Date(b.createdAt) - new Date(a.createdAt)
+//     ).slice(0, 2);
+
 //     recentTrainees.forEach((trainee) => {
 //       activities.push({
 //         id: `trainee-${trainee.id}`,
@@ -72,7 +83,12 @@
 //       });
 //     });
 
-//     const recentMarksheets = trainees.filter(t => t.grade).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 1);
+//     // Recent marksheets
+//     const recentMarksheets = trainees
+//       .filter(t => t.grade)
+//       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+//       .slice(0, 1);
+
 //     if (recentMarksheets.length > 0) {
 //       const trainee = recentMarksheets[0];
 //       activities.push({
@@ -84,7 +100,12 @@
 //       });
 //     }
 
-//     const recentTrainers = trainers.filter(t => t.joinDate).sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate)).slice(0, 1);
+//     // Recent trainer
+//     const recentTrainers = trainers
+//       .filter(t => t.joinDate)
+//       .sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate))
+//       .slice(0, 1);
+
 //     if (recentTrainers.length > 0) {
 //       const trainer = recentTrainers[0];
 //       activities.push({
@@ -96,6 +117,7 @@
 //       });
 //     }
 
+//     // If nothing, show default message
 //     if (activities.length === 0) {
 //       activities.push({
 //         id: 'default',
@@ -112,7 +134,8 @@
 //   const recentActivities = generateRecentActivities();
 
 //   return (
-//     <div className="space-y-6">
+//     // ✅ No need to change this structure — all data is dynamic from context
+//    <div className="space-y-6">
 //       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 //         {stats.map((stat, index) => {
 //           const Icon = stat.icon;
@@ -237,8 +260,6 @@
 //     </div>
 //   );
 // }
-
-
 
 import React from 'react';
 import {

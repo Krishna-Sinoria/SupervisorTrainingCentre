@@ -38,6 +38,72 @@ db.serialize(() => {
     }
   });
 
+  // Create profile table
+db.run(`
+  CREATE TABLE IF NOT EXISTS profile (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userId INTEGER UNIQUE NOT NULL,
+    name TEXT,
+    email TEXT,
+    phone TEXT,
+    address TEXT,
+    department TEXT,
+    position TEXT,
+    photo TEXT,
+    role TEXT,
+    joinDate TEXT,
+    active INTEGER DEFAULT 1,
+    FOREIGN KEY (userId) REFERENCES users(id)
+  )
+`, (err) => {
+  if (err) {
+    console.error('❌ Error creating profile table:', err.message);
+  } else {
+    console.log('✅ Profile table ready.');
+
+    // 👉 Check if profiles already exist
+    db.get(`SELECT COUNT(*) AS count FROM profile`, (err, row) => {
+      if (err) return console.error('❌ Failed to count profiles:', err.message);
+
+      if (row.count === 0) {
+        // Insert default profiles for all users
+        db.all(`SELECT * FROM users`, (err, users) => {
+          if (err) return console.error('❌ Failed to fetch users:', err.message);
+
+          const stmt = db.prepare(`
+            INSERT INTO profile (
+              userId, name, email, phone, address, department, position, photo, role, joinDate, active
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `);
+
+          users.forEach(user => {
+            stmt.run(
+              user.id,
+              user.name,
+              user.email,
+              '', // phone
+              '', // address
+              '', // department
+              '', // position
+              '', // photo
+              user.role,
+              '', // joinDate
+              1   // active
+            );
+          });
+
+          stmt.finalize();
+          console.log('📄 Default profiles inserted for all users.');
+        });
+      } else {
+        console.log('ℹ️ Profiles already exist. Skipping insert.');
+      }
+    });
+  }
+});
+
+
+
   // Drop old trainees table
   db.run(`DROP TABLE IF EXISTS trainees`, (err) => {
     if (err) {
@@ -91,6 +157,54 @@ db.serialize(() => {
       console.log('✅ Trainees table ready.');
     }
   });
+
+  // Drop old attendance table
+  db.run(`DROP TABLE IF EXISTS attendance`, (err) => {
+    if (err) {
+      console.error('❌ Failed to drop old attendance table:', err.message);
+    } else {
+      console.log('🗑️ Old attendance table dropped.');
+    }
+  });
+
+ // Attendance Table Creation
+db.run(`
+  CREATE TABLE IF NOT EXISTS attendance (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trainee_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('Present', 'Absent')),
+    UNIQUE(trainee_id, date)
+  )
+`);
+
+// Drop old marksheets table
+  db.run(`DROP TABLE IF EXISTS marksheets`, (err) => {
+    if (err) {
+      console.error('❌ Failed to drop old marksheets table:', err.message);
+    } else {
+      console.log('🗑️ Old marksheets table dropped.');
+    }
+  });
+
+//Marksheet Table Creation
+db.run(`
+    CREATE TABLE IF NOT EXISTS marksheets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      traineeId INTEGER NOT NULL,
+      traineeName TEXT NOT NULL,
+      trainerId TEXT NOT NULL,
+      marks TEXT NOT NULL,
+      total INTEGER NOT NULL,
+      maxTotal INTEGER NOT NULL,
+      percentage TEXT NOT NULL,
+      grade TEXT NOT NULL,
+      result TEXT NOT NULL,
+      issuedDate TEXT NOT NULL
+    )
+  `);
+
+
 });
 
 module.exports = db;

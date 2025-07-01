@@ -3,10 +3,11 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db/database');
 
-
-
 const authRoutes = require('./routes/authRoutes');
 const traineeRoutes = require('./routes/traineeRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const marksheetRoutes = require('./routes/marksheetRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 
 const app = express();
 app.use(cors());
@@ -19,9 +20,12 @@ app.get('/api/ping', (req, res) => {
 });
 
 // ✅ Mount actual routes
-
 app.use('/api/trainees', traineeRoutes);
 app.use('/api', authRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api', marksheetRoutes);
+app.use('/api/profile', profileRoutes);
+
 
 const PORT = 5000;
 app.listen(PORT, () => {
