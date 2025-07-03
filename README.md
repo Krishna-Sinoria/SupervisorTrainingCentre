@@ -15,5 +15,5 @@ The system includes:
 
 👥 Role Manager for directors to edit, promote, or delete trainers
 
-☁️ Built using MongoDB Atlas, Express.js, React.js, and Node.js (MERN)
+☁️ Built using Sqlite, Express.js, React.js, and Node.js (MERN)
 
