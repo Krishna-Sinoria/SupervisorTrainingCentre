@@ -101,10 +101,8 @@ const Attendance = () => {
                 {trainees
                   .filter(trainee => user?.role === 'director' || String(trainee.trainerId) === String(user?.id))
                   .map((trainee) => {
-
                   const status = getAttendanceStatus(trainee.id, selectedDate);
                   const alreadyMarked = status !== 'Not Marked';
-
                   return (
                     <tr key={trainee.id} className="border-b last:border-none hover:bg-gray-50">
                       <td

@@ -31,6 +31,7 @@ db.serialize(() => {
           stmt.run('Trainer One', 'trainer1@stc.in', 'trainer123', 'trainer');
           stmt.run('Trainer Two', 'trainer2@stc.in', 'trainer123', 'trainer');
           stmt.run('Trainer Three', 'trainer3@stc.in', 'trainer123', 'trainer');
+          stmt.run('Riya Sharma', 'riya123@gov.in', 'riya123', 'trainer');
           stmt.finalize();
           console.log('🧑‍💼 Default users added to DB');
         }
@@ -105,13 +106,13 @@ db.run(`
 
 
   // Drop old trainees table
-  db.run(`DROP TABLE IF EXISTS trainees`, (err) => {
-    if (err) {
-      console.error('❌ Failed to drop old trainees table:', err.message);
-    } else {
-      console.log('🗑️ Old trainees table dropped.');
-    }
-  });
+  // db.run(`DROP TABLE IF EXISTS trainees`, (err) => {
+  //   if (err) {
+  //     console.error('❌ Failed to drop old trainees table:', err.message);
+  //   } else {
+  //     console.log('🗑️ Old trainees table dropped.');
+  //   }
+  // });
 
   // Create new trainees table
   db.run(`
@@ -148,7 +149,8 @@ db.run(`
       degreeType TEXT,
       degreeName TEXT,
       graduationMarks TEXT,
-      trainerId TEXT
+       trainerId TEXT
+     
     )
   `, (err) => {
     if (err) {
@@ -203,7 +205,50 @@ db.run(`
       issuedDate TEXT NOT NULL
     )
   `);
+//trainer table
+  const trainerTableQuery = `
+  CREATE TABLE IF NOT EXISTS trainers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fullName TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    phone TEXT,
+    designation TEXT,
+    department TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+`;
 
+db.run(trainerTableQuery, (err) => {
+  if (err) console.error("Trainer table creation error:", err.message);
+  else console.log("✅ Trainers table ready.");
+});
+
+// Add 'role' column if not exists
+const alterTrainerTableQuery = `
+  ALTER TABLE trainers ADD COLUMN role TEXT DEFAULT 'trainer';
+ 
+`;
+
+db.run(alterTrainerTableQuery, (err) => {
+  if (err && !err.message.includes('duplicate column')) {
+    console.error("Trainer table alter error (role):", err.message);
+  } else {
+    console.log("✅ Trainer table 'role' column ready or already exists.");
+  }
+});
+
+// Add 'active' column if not exists
+const alterActiveColumnQuery = `
+  ALTER TABLE trainers ADD COLUMN active INTEGER DEFAULT 1;
+`;
+
+db.run(alterActiveColumnQuery, (err) => {
+  if (err && !err.message.includes('duplicate column')) {
+    console.error("Trainer table alter error (active):", err.message);
+  } else {
+    console.log("✅ Trainer table 'active' column ready or already exists.");
+  }
+});
 
 });
 

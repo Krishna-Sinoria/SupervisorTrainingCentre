@@ -16,39 +16,98 @@ export default function RoleManager() {
     joinDate: new Date().toISOString().split('T')[0]
   });
 
-  const allUsers = [
-    {
-      id: '1', name: 'Director STC', email: 'director@stc.railway.gov.in',
-      role: 'director', position: 'Director', department: 'Administration',
-      phone: '+91-9876543200', address: 'Director Quarters, STC Campus',
-      joinDate: '2015-01-15', active: true
-    },
-    ...trainers
-  ];
+  // const allUsers = [
+  //   {
+  //     id: '1', name: 'Director STC', email: 'director@stc.railway.gov.in',
+  //     role: 'director', position: 'Director', department: 'Administration',
+  //     phone: '+91-9876543200', address: 'Director Quarters, STC Campus',
+  //     joinDate: '2015-01-15', active: true
+  //   },
+  //   ...trainers
+  // ];
 
-  const filteredUsers = allUsers.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.position.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const allUsers = [
+  {
+    id: 'director',
+    name: 'Director STC',
+    email: 'director@stc.railway.gov.in',
+    role: 'director',
+    position: 'Director',
+    department: 'Administration',
+    phone: '+91-9876543200',
+    address: 'Director Quarters, STC Campus',
+    joinDate: '2015-01-15',
+    active: true
+  },
+  ...trainers
+];
+
+  // const filteredUsers = allUsers.filter(user =>
+  //   user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   user.position.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+
+
+   const filteredUsers = allUsers.filter(user =>
+  (user.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (user.email ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (user.position ?? '').toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   const selectedTrainerData = trainers.find(t => t.id === selectedTrainer);
   const trainerTrainees = selectedTrainer ? getTraineesByTrainer(selectedTrainer) : [];
 
+  // const handleEditTrainer = (trainer) => {
+  //   setEditingTrainer(trainer.id);
+  //   setEditFormData(trainer);
+  // };
+
+
   const handleEditTrainer = (trainer) => {
-    setEditingTrainer(trainer.id);
-    setEditFormData(trainer);
-  };
+  setEditingTrainer(trainer.id);
+  setEditFormData({
+    name: trainer.fullName || '',
+    email: trainer.email || '',
+    position: trainer.designation || '',
+    department: trainer.department || '',
+    phone: trainer.phone || '',
+    address: trainer.address || '',
+    joinDate: trainer.created_at?.split('T')[0] || '',
+    active: trainer.active ?? true
+  });
+};
+
+  // const handleSaveEdit = () => {
+  //   if (editingTrainer && editFormData) {
+  //     updateTrainer(editingTrainer, editFormData);
+  //     setEditingTrainer(null);
+  //     setEditFormData({});
+  //     setShowSuccess(true);
+  //     setTimeout(() => setShowSuccess(false), 3000);
+  //   }
+  // };
 
   const handleSaveEdit = () => {
-    if (editingTrainer && editFormData) {
-      updateTrainer(editingTrainer, editFormData);
-      setEditingTrainer(null);
-      setEditFormData({});
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
-    }
-  };
+  if (editingTrainer && editFormData) {
+    const updatedTrainer = {
+      fullName: editFormData.name,
+      email: editFormData.email,
+      designation: editFormData.position,
+      department: editFormData.department,
+      phone: editFormData.phone,
+      address: editFormData.address,
+      active: editFormData.active,
+    };
+    updateTrainer(editingTrainer, updatedTrainer);
+    setEditingTrainer(null);
+    setEditFormData({});
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+  }
+};
+
+
 
   const handleCancelEdit = () => {
     setEditingTrainer(null);
@@ -140,7 +199,9 @@ export default function RoleManager() {
                     <td className="py-3 px-4 flex items-center gap-3">
                       <div className="bg-gray-100 p-2 rounded-full"><Icon className="h-4 w-4 text-gray-600" /></div>
                       <div>
-                        <p className="font-medium text-gray-900">{user.name}</p>
+                        {/* <p className="font-medium text-gray-900">{user.name}</p> */}
+                        <p className="font-medium text-gray-900">{user.fullName || user.name || user.email}</p>
+
                         <p className="text-sm text-gray-600">{user.email}</p>
                       </div>
                     </td>

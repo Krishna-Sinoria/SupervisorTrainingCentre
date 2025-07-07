@@ -18,58 +18,87 @@ export function DataProvider({ children }) {
   
 
   useEffect(() => {
-    fetchTrainees();
-     fetchAllAttendance();
+  const loadData = async () => {
 
-    const savedTrainers = localStorage.getItem('stc_trainers');
-    if (savedTrainers) {
-      try {
-        const parsed = JSON.parse(savedTrainers);
-        setTrainers(Array.isArray(parsed) ? parsed : []);
-      } catch (err) {
-        console.error('Trainer data parsing error:', err);
-        setTrainers([]);
-      }
-    } else {
-      const demo = [
-        {
-          id: '2',
-          email: 'trainer1@stc.railway.gov.in',
-          name: 'Rajesh Kumar',
-          role: 'trainer',
-          position: 'Senior Trainer',
-          phone: '+91-9876543201',
-          address: 'Staff Quarters Block A, STC Campus',
-          department: 'Mechanical',
-          joinDate: '2020-03-15',
-          active: true
-        },
-        {
-          id: '3',
-          email: 'trainer2@stc.railway.gov.in',
-          name: 'Priya Sharma',
-          role: 'trainer',
-          position: 'Trainer',
-          phone: '+91-9876543202',
-          address: 'Staff Quarters Block B, STC Campus',
-          department: 'Electrical',
-          joinDate: '2021-07-20',
-          active: true
-        }
-      ];
-      setTrainers(demo);
-      localStorage.setItem('stc_trainers', JSON.stringify(demo));
-    }
+   await fetchTrainees();
+   await  fetchAllAttendance();
+   await  fetchTrainers();
+  }
+   loadData();
+    // const savedTrainers = localStorage.getItem('stc_trainers');
+    // if (savedTrainers) {
+    //   try {
+    //     const parsed = JSON.parse(savedTrainers);
+    //     setTrainers(Array.isArray(parsed) ? parsed : []);
+    //   } catch (err) {
+    //     console.error('Trainer data parsing error:', err);
+    //     setTrainers([]);
+    //   }
+    // } else {
+    //   const demo = [
+    //     {
+    //       id: '2',
+    //       email: 'trainer1@stc.railway.gov.in',
+    //       name: 'Rajesh Kumar',
+    //       role: 'trainer',
+    //       position: 'Senior Trainer',
+    //       phone: '+91-9876543201',
+    //       address: 'Staff Quarters Block A, STC Campus',
+    //       department: 'Mechanical',
+    //       joinDate: '2020-03-15',
+    //       active: true
+    //     },
+    //     {
+    //       id: '3',
+    //       email: 'trainer2@stc.railway.gov.in',
+    //       name: 'Priya Sharma',
+    //       role: 'trainer',
+    //       position: 'Trainer',
+    //       phone: '+91-9876543202',
+    //       address: 'Staff Quarters Block B, STC Campus',
+    //       department: 'Electrical',
+    //       joinDate: '2021-07-20',
+    //       active: true
+    //     }
+    //   ];
+    //   setTrainers(demo);
+    //   localStorage.setItem('stc_trainers', JSON.stringify(demo));
+    // }
   }, []);
 
   const fetchTrainees = async () => {
     try {
       const res = await axios.get('http://localhost:5000/api/trainees');
-      setTrainees(res.data || []);
+      setTrainees(res.data||[]);
+      //setTrainees(res.data||[]);
     } catch (err) {
       console.error('Error fetching trainees:', err?.response?.data || err.message);
     }
   };
+
+  
+  //   const fetchTrainers = async () => {
+  //   try {
+  //     const res = await axios.get('http://localhost:5000/api/trainers');
+  //     setTrainers(res.data || []);
+  //   } catch (err) {
+  //     console.error('Error fetching trainers:', err?.response?.data || err.message);
+  //   }
+  // };
+
+  const fetchTrainers = async () => {
+  try {
+    const res = await axios.get('http://localhost:5000/api/trainers');
+    const mapped = (res.data||[]).map(t => ({
+      ...t,
+      name: t.fullName || t.name || t.email,
+      position: t.designation || t.position,
+    }));
+    setTrainers(mapped);
+  } catch (err) {
+    console.error('Error fetching trainers:', err?.response?.data || err.message);
+  }
+};
 
   const addTrainee = async (traineeData) => {
     try {
@@ -106,6 +135,36 @@ export function DataProvider({ children }) {
       console.error('Error deleting trainee:', err?.response?.data || err.message);
     }
   };
+
+  const addTrainer = async (trainerData) => {
+    try {
+      const res = await axios.post('http://localhost:5000/api/trainers', trainerData);
+      const newTrainer = { ...trainerData, id: res.data.id };
+      setTrainers(prev => [...prev, newTrainer]);
+    } catch (err) {
+      console.error('Error adding trainer:', err?.response?.data || err.message);
+      throw err;
+    }
+  };
+
+  const updateTrainer = async (id, updates) => {
+    try {
+      await axios.put(`http://localhost:5000/api/trainers/${id}`, updates);
+      setTrainers(prev => prev.map(t => (t.id === id ? { ...t, ...updates } : t)));
+    } catch (err) {
+      console.error('Error updating trainer:', err?.response?.data || err.message);
+    }
+  };
+
+  const deleteTrainer = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/trainers/${id}`);
+      setTrainers(prev => prev.filter(t => t.id !== id));
+    } catch (err) {
+      console.error('Error deleting trainer:', err?.response?.data || err.message);
+    }
+  };
+
 
   /*attendance*/
    const fetchAllAttendance = async () => {
@@ -155,7 +214,7 @@ export function DataProvider({ children }) {
   
   /*backend*/
  const getTraineesByTrainer = (trainerId) => {
-  return trainees.filter(t => t.trainerId?.toString() === trainerId.toString());
+   return trainees.filter(t => t.trainerId?.toString() === trainerId.toString());
 };
 
 
@@ -220,6 +279,9 @@ export function DataProvider({ children }) {
         addTrainee,
         updateTrainee,
         deleteTrainee,
+        addTrainer,
+      updateTrainer,
+      deleteTrainer,
         getTraineesByTrainer,
         getAnalytics,
         generateTicketNumber,

@@ -8,6 +8,7 @@ const traineeRoutes = require('./routes/traineeRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const marksheetRoutes = require('./routes/marksheetRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const trainerRoutes = require('./routes/trainerRoutes');
 
 const app = express();
 app.use(cors());
@@ -25,6 +26,7 @@ app.use('/api', authRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api', marksheetRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/trainers', trainerRoutes);
 
 
 const PORT = 5000;

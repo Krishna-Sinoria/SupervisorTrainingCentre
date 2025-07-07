@@ -91,16 +91,21 @@ export default function AddTraineeForm() {
       reader.readAsDataURL(file);
     }
   };
-
+  const isTrainer = user?.role === 'trainer';
   const validateForm = () => {
     const requiredFields = [
       'serialNo', 'fullName', 'fatherName', 'motherName', 'dateOfBirth',
       'dateOfAppointment', 'dateOfSparing', 'category', 'bloodGroup',
       'maritalStatus', 'employeeName', 'pfNumber', 'modeOfAppointment',
-     'unit', 'workingUnder',
+     'unit', 
+    //'workingUnder',
       'stationCode', 'phoneNumber', 'email', 'address','class10Marks',
   'class12Marks','degreeType','degreeName','graduationMarks',
     ];
+
+    if (user?.role !== 'trainer') {
+    requiredFields.push('workingUnder');
+  }
 
     for (const field of requiredFields) {
       if (!formData[field]) {
@@ -123,7 +128,14 @@ export default function AddTraineeForm() {
     try {
       await addTrainee({
         ...formData,
-       trainerId: formData.workingUnder || user?.id || ''
+          workingUnder: user?.role === 'trainer' ? user?.name : formData.workingUnder,
+
+         trainerId: user?.role === 'trainer' ? String(user?.id): String(formData.workingUnder||'')
+       
+
+     // trainerId:  user?.id 
+      //trainerId: formData.workingUnder || user?.id || ''
+
       });
 
       // Reset form
@@ -540,7 +552,9 @@ export default function AddTraineeForm() {
                 <option value="Manual">Manual</option>
               </select>
             </div>
-
+             {/* chnages  */}
+            
+            {!isTrainer && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Working Under *
@@ -561,8 +575,9 @@ export default function AddTraineeForm() {
                 <option value="Other">Other (Manual Entry)</option>
               </select>
             </div>
-
-            {formData.workingUnder === 'Other' && (
+            //chnage
+            )}
+            {/* {formData.workingUnder === 'Other' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Custom Working Under *
@@ -571,14 +586,28 @@ export default function AddTraineeForm() {
                   type="text"
                   name="workingUnder"
                   value={formData.customWorkingUnder || ''} //some fixation
-                  onChange={(e) => setFormData(prev => ({ ...prev, workingUnder: e.target.value }))}
+                  // onChange={(e) => setFormData(prev => ({ ...prev, workingUnder: e.target.value }))}
+                 onChange={(e) => setFormData(prev => ({ ...prev, customWorkingUnder: e.target.value }))}
+
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter custom supervisor name"
                   required
                 />
               </div>
-            )}
+            )} */}
 
+              {isTrainer && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Working Under</label>
+                <input
+                  type="text"
+                  value={user.name}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700"
+                  readOnly
+                  disabled
+                />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Station Code *

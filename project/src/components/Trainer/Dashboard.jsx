@@ -175,18 +175,54 @@ import { useNavigate } from 'react-router-dom'; // Added
 
 export default function TrainerDashboard() {
   const { user } = useAuth();
-  const { getTraineesByTrainer } = useData();
+  const { getTraineesByTrainer,trainers, trainees} = useData();
   const [myTrainees, setMyTrainees] = useState([]);
   const navigate = useNavigate(); // Initialize
+ const trainerProfile = trainers.find(tr => tr.email === user.email);
+const correctTrainerId = trainerProfile ? trainerProfile.id.toString() : '';
+
+  // useEffect(() => {
+  //   const loadTrainees = async () => {
+  //     if (!user?.id) return;
+  //     const result = await getTraineesByTrainer(user.id);
+  //     setMyTrainees(result || []);
+  //   };
+  //   loadTrainees();
+  // }, [user,getTraineesByTrainer]);
+
 
   useEffect(() => {
-    const loadTrainees = async () => {
-      if (!user?.id) return;
-      const result = await getTraineesByTrainer(user.id);
-      setMyTrainees(result || []);
-    };
-    loadTrainees();
-  }, [user]);
+  if (!correctTrainerId) return;
+  const filtered = trainees.filter(t => t.trainerId === correctTrainerId);
+  setMyTrainees(filtered);
+}, [trainees, correctTrainerId]);
+
+
+//   useEffect(() => {
+//   const loadTrainees = async () => {
+//     try {
+//       const res = await fetch('/api/trainees/assigned', {
+//         headers: {
+//           Authorization: `Bearer ${localStorage.getItem('token')}`
+//         }
+//       });
+
+//       if (!res.ok) {
+//         console.error("Error fetching assigned trainees:", res.statusText);
+//         return;
+//       }
+
+//       const data = await res.json();
+//       setMyTrainees(data || []);
+//     } catch (err) {
+//       console.error("Failed to load trainees:", err);
+//     }
+//   };
+
+//   if (user?.id && user?.role === 'trainer') {
+//     loadTrainees();
+//   }
+// }, [user]);
 
   const completedTrainees = myTrainees.filter(t => t.grade && t.grade !== '');
   const pendingMarksheets = myTrainees.filter(t => !t.marks);
