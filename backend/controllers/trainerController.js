@@ -86,3 +86,39 @@ exports.deleteTrainer = (req, res) => {
     res.json({ message: 'Trainer deleted' });
   });
 };
+
+const { addTrainer } = require('../models/trainerModel');
+const { createUserWithTrainerId } = require('../models/userModel');
+
+exports.addTrainerWithUser = (req, res) => {
+  const {
+    fullName, email, phone, designation, department,
+    password, position, address, joinDate, photo
+  } = req.body;
+
+  // 1. Add to trainers table
+  addTrainer({ fullName, email, phone, designation, department }, (err, trainerId) => {
+    if (err) return res.status(500).json({ error: 'Failed to add trainer' });
+
+    // 2. Add to users table with linked trainerId
+    const user = {
+      name: fullName,
+      email,
+      password,
+      role: 'trainer',
+      position,
+      phone,
+      address,
+      department,
+      joinDate,
+      photo,
+      trainerId // 🔗 Foreign key
+    };
+
+    createUserWithTrainerId(user, (err2) => {
+      if (err2) return res.status(500).json({ error: 'Failed to create user account' });
+
+      res.status(201).json({ message: 'Trainer and user account created successfully' });
+    });
+  });
+};

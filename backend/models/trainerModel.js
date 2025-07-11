@@ -1,6 +1,7 @@
 const db = require('../db/database');
 
 // Add new trainer
+// Add new trainer and return inserted ID
 function addTrainer(data, callback) {
   const { fullName, email, phone, designation, department } = data;
   const query = `
@@ -8,9 +9,11 @@ function addTrainer(data, callback) {
     VALUES (?, ?, ?, ?, ?)
   `;
   db.run(query, [fullName, email, phone, designation, department], function (err) {
-    callback(err, { id: this?.lastID });
+    if (err) return callback(err);
+    callback(null, this.lastID);  // Return just the ID
   });
 }
+
 
 // Get all trainers
 function getAllTrainers(callback) {

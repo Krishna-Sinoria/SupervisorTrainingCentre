@@ -29,7 +29,7 @@ export default function Marksheet() {
   const [newSubjectType, setNewSubjectType] = useState('theory');
   const [newSubjectMax, setNewSubjectMax] = useState(100);
 
-  const myTrainees = getTraineesByTrainer(user?.id || '');
+  const myTrainees = getTraineesByTrainer(user?.trainerId || '');
   const selectedTraineeData = myTrainees.find(t => t.id === Number(selectedTrainee));
 
   useEffect(() => {

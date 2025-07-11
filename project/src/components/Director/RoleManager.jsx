@@ -127,7 +127,8 @@ export default function RoleManager() {
       await addTrainer({ ...newTrainerData, role: 'trainer', active: true });
       setNewTrainerData({
         name: '', email: '', position: '', department: '', phone: '', address: '',
-        joinDate: new Date().toISOString().split('T')[0]
+        joinDate: new Date().toISOString().split('T')[0],
+        id: trainer.id
       });
       setShowAddForm(false);
       setShowSuccess(true);

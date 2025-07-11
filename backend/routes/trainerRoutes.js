@@ -7,5 +7,8 @@ router.get('/', trainerController.getAllTrainers);
 router.get('/:id', trainerController.getTrainerById);
 router.put('/:id', trainerController.updateTrainer);
 router.delete('/:id', trainerController.deleteTrainer);
+router.post('/addWithUser', trainerController.addTrainerWithUser);
+
 
 module.exports = router;
+

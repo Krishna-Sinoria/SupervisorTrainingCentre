@@ -110,3 +110,9 @@ router.post('/', (req, res) => {
 
 
 module.exports = router;
+
+
+db.all(`PRAGMA table_info(users)`, [], (err, rows) => {
+  console.log("Users table schema:");
+  console.table(rows);
+});

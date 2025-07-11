@@ -10,7 +10,7 @@ export default function IDCard() {
   const [selectedTrainee, setSelectedTrainee] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const myTrainees = getTraineesByTrainer(user?.id || '');
+  const myTrainees = getTraineesByTrainer(user?.trainerId || '');
   const selectedTraineeData = myTrainees.find(t => t.id === Number(selectedTrainee));
 
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Eye, Download, User, ArrowLeft } from 'lucide-react';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext';
 import TraineeModal from '../Common/TraineeModal';
 
 const TraineeTooltip = ({ trainee, position }) => (

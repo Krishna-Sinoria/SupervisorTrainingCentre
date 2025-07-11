@@ -130,7 +130,7 @@ export default function AddTraineeForm() {
         ...formData,
           workingUnder: user?.role === 'trainer' ? user?.name : formData.workingUnder,
 
-         trainerId: user?.role === 'trainer' ? String(user?.id): String(formData.workingUnder||'')
+         trainerId: user?.role === 'trainer' ? String(user?.trainerId): String(formData.workingUnder||'')
        
 
      // trainerId:  user?.id 

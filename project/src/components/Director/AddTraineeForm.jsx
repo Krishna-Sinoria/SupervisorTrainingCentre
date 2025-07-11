@@ -124,10 +124,8 @@ export default function AddTraineeForm() {
       await addTrainee({
         ...formData,
         // trainerId: user?.id || ''
-        trainerId: user?.role === 'trainer' ? user.id : formData.workingUnder
+        trainerId: user?.role === 'trainer' ? trainers.id : formData.workingUnder
    
-
-
       });
 
       // Reset form
