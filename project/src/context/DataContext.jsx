@@ -214,7 +214,9 @@ export function DataProvider({ children }) {
   
   /*backend*/
  const getTraineesByTrainer = (trainerId) => {
-   return trainees.filter(t => t.trainerId?.toString() === trainerId.toString());
+   return trainees.filter(t => 
+  t?.trainerId?.toString?.() === trainerId?.toString?.()
+)
 };
 
 

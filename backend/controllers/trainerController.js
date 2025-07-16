@@ -118,7 +118,8 @@ exports.addTrainerWithUser = (req, res) => {
     createUserWithTrainerId(user, (err2) => {
       if (err2) return res.status(500).json({ error: 'Failed to create user account' });
 
-      res.status(201).json({ message: 'Trainer and user account created successfully' });
+      res.status(201).json({ success: true, message: 'Trainer and user created successfully', id: trainerId });
+
     });
   });
 };
