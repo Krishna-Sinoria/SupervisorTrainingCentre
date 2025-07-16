@@ -123,7 +123,9 @@ export default function AddTraineeForm() {
     try {
       await addTrainee({
         ...formData,
-        trainerId: user?.id || ''
+        // trainerId: user?.id || ''
+        trainerId: user?.role === 'trainer' ? trainers.id : formData.workingUnder
+   
       });
 
       // Reset form
@@ -554,8 +556,17 @@ export default function AddTraineeForm() {
               >
                 <option value="">Select Trainer</option>
                 {activeTrainers.map((trainer) => (
-                  <option key={trainer.id} value={trainer.name}>
-                    {trainer.name} - {trainer.position} ({trainer.department})
+                  // <option key={trainer.id} value={trainer.name}>
+                  //   {trainer.name} - {trainer.position} ({trainer.department})
+                  // </option>
+                
+
+                  // <option key={trainer.id} value={ trainer.name ||trainer.fullName || trainer.email}>
+                  //   {trainer.fullName || trainer.name || trainer.email} - {trainer.designation || trainer.position} ({trainer.department})
+                  // </option>
+
+                   <option key={trainer.userId} value={trainer.userId||trainer.name ||trainer.fullName || trainer.email}>
+                    {trainer.fullName || trainer.name || trainer.email} - {trainer.designation || trainer.position} ({trainer.department})
                   </option>
                 ))}
                 <option value="Other">Other (Manual Entry)</option>
@@ -571,7 +582,7 @@ export default function AddTraineeForm() {
                   type="text"
                   name="workingUnder"
                   value={formData.customWorkingUnder || ''} //some fixation
-                  onChange={(e) => setFormData(prev => ({ ...prev, workingUnder: e.target.value }))}
+                  onChange={(e) => setFormData(prev => ({ ...prev, customWorkingUnder: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter custom supervisor name"
                   required

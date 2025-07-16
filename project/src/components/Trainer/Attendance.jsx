@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { DataContext } from '../../context/DataContext';
 import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
 
 
 const Attendance = () => {
@@ -12,6 +13,12 @@ const Attendance = () => {
   } = useContext(DataContext);
 
   const { user } = useAuth();
+  console.log(user);
+  const { trainers } = useData();
+  console.log(trainers);
+
+  const currentTrainer = trainers.length === 1 ? trainers[0] : null;
+  console.log(currentTrainer);
 
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [summaryModal, setSummaryModal] = useState({ open: false, trainee: null });
@@ -99,12 +106,10 @@ const Attendance = () => {
               </thead>
               <tbody>
                 {trainees
-                  .filter(trainee => user?.role === 'director' || String(trainee.trainerId) === String(user?.id))
+                  .filter(trainee => user?.role === 'director' || String(trainee.trainerId) === String(user?.trainerId))
                   .map((trainee) => {
-
                   const status = getAttendanceStatus(trainee.id, selectedDate);
                   const alreadyMarked = status !== 'Not Marked';
-
                   return (
                     <tr key={trainee.id} className="border-b last:border-none hover:bg-gray-50">
                       <td

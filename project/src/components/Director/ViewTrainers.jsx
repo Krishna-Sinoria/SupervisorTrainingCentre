@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Eye, Download, User, ArrowLeft } from 'lucide-react';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext';
 import TraineeModal from '../Common/TraineeModal';
 
 const TraineeTooltip = ({ trainee, position }) => (
@@ -74,12 +75,20 @@ export default function ViewTrainers() {
   const trainerTrainees = selectedTrainer ? getTraineesByTrainer(selectedTrainer) : [];
   const selectedTraineeData = selectedTrainee ? trainees.find(t => t.id === selectedTrainee) : null;
 
+  // const filteredTrainers = trainersWithCounts.filter(trainer =>
+  //   trainer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   trainer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   trainer.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   trainer.department?.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+
+
   const filteredTrainers = trainersWithCounts.filter(trainer =>
-    trainer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    trainer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    trainer.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    trainer.department?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  (trainer.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (trainer.email ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (trainer.position ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (trainer.department ?? '').toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   const handleTraineeHover = (trainee, event) => {
     setHoveredTrainee({
@@ -262,7 +271,7 @@ export default function ViewTrainers() {
                         </td>
                         <td className="py-3 px-4 text-gray-600">{trainee.id}</td>
                         <td className="py-3 px-4 text-gray-600">{trainee.email}</td>
-                        <td className="py-3 px-4 text-gray-600">{trainee.moduleNumber}</td>
+                        <td className="py-3 px-4 text-gray-600"> {trainee.courseDuration || trainee.moduleNumber || 'N/A'}</td>
                         <td className="py-3 px-4 text-gray-600">
                           {new Date(trainee.dateOfSparing).toLocaleDateString()}
                         </td>

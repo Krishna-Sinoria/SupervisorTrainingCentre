@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Download, User } from 'lucide-react';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext'; 
 import TraineeModal from '../Common/TraineeModal';
 
 const TraineeTooltip = ({ trainee, position }) => (
@@ -58,10 +59,14 @@ const TraineeTooltip = ({ trainee, position }) => (
   </div>
 );
 
-export default function ViewTrainees({ loggedInTrainerId }) {
+export default function ViewTrainees() {
+   const { user } = useAuth();
   const { trainees, trainers, getTraineesByTrainer } = useData();
   const [selectedTrainee, setSelectedTrainee] = useState(null);
   const [hoveredTrainee, setHoveredTrainee] = useState(null);
+
+const loggedInTrainerId = user?.trainerId; 
+  
 
   // ✅ Check for valid trainer ID
   if (!loggedInTrainerId) {

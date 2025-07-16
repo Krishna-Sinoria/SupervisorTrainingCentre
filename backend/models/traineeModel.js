@@ -46,7 +46,7 @@ function addTrainee(data, callback) {
     data.degreeType,
     data.degreeName,
     data.graduationMarks,
-    Number(data.trainerId)
+    String(data.trainerId)
   ];
 
   db.run(query, values, function (err) {

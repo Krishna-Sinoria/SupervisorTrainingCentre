@@ -5,7 +5,7 @@ exports.findUserByEmail = (email, callback) => {
 };
 
 exports.createUser = (user, callback) => {
-  const { id, name, email, password, role, position, phone, address, department, joinDate, photo } = user;
+  const { id, name, email, password, role, position, phone, address, department, joinDate, photo} = user;
   db.run(
     `INSERT INTO users (id, name, email, password, role, position, phone, address, department, joinDate, photo) 
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -20,4 +20,19 @@ exports.getAllTrainers = (callback) => {
 
 exports.updateTrainerStatus = (id, active, callback) => {
   db.run('UPDATE users SET active = ? WHERE id = ?', [active, id], callback);
+};
+
+exports.createUserWithTrainerId = (user, callback) => {
+  const {
+    name, email, password, role, position,
+    phone, address, department, joinDate,
+    photo, trainerId
+  } = user;
+
+  db.run(
+    `INSERT INTO users (name, email, password, role, position, phone, address, department, joinDate, photo, trainerId) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [name, email, password, role, position, phone, address, department, joinDate, photo, trainerId],
+    callback
+  );
 };
