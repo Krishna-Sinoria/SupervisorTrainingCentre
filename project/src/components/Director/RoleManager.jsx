@@ -128,7 +128,7 @@ export default function RoleManager() {
       setNewTrainerData({
         name: '', email: '', position: '', department: '', phone: '', address: '',
         joinDate: new Date().toISOString().split('T')[0],
-        id: trainer.id
+        id: trainers.id
       });
       setShowAddForm(false);
       setShowSuccess(true);
@@ -195,8 +195,9 @@ export default function RoleManager() {
               {filteredUsers.map(user => {
                 const Icon = RoleIcon(user.role);
                 const traineeCount = user.role === 'trainer' ? getTraineesByTrainer(user.id).length : 0;
+
                 return (
-                  <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr key={user.id || user.email || index} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-3 px-4 flex items-center gap-3">
                       <div className="bg-gray-100 p-2 rounded-full"><Icon className="h-4 w-4 text-gray-600" /></div>
                       <div>
