@@ -177,8 +177,8 @@ export default function Login() {
           <div className="text-xs text-blue-700">
             <p><strong>Director:</strong> director@stc.in</p>
             <p><strong>Trainer:</strong> trainer1@stc.in</p>
-            <p><strong>Trainer Password:</strong> Trainer123</p>
-            <p><strong>Director Password:</strong> Director123</p>
+            <p><strong>Trainer Password:</strong>trainer123</p>
+            <p><strong>Director Password:</strong> director123</p>
             
           </div>
         </div>
