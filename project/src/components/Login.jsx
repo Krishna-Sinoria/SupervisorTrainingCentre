@@ -175,9 +175,11 @@ export default function Login() {
         <div className="bg-blue-50 p-4 rounded-lg mb-6">
           <p className="text-sm font-medium text-blue-800 mb-2">Demo Credentials:</p>
           <div className="text-xs text-blue-700">
-            <p><strong>Director:</strong> director@stc.railway.gov.in</p>
-            <p><strong>Trainer:</strong> trainer1@stc.railway.gov.in</p>
-            <p><strong>Password:</strong> password123</p>
+            <p><strong>Director:</strong> director@stc.in</p>
+            <p><strong>Trainer:</strong> trainer1@stc.in</p>
+            <p><strong>Trainer Password:</strong>trainer123</p>
+            <p><strong>Director Password:</strong> director123</p>
+            
           </div>
         </div>
 
